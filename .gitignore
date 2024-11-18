@@ -5,3 +5,4 @@
 ./rawdataset
 ./save_model
 ./log
+*.jpg
