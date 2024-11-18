@@ -1,0 +1,7 @@
+*.tiff
+*.pth
+*.npy
+./dataset
+./rawdataset
+./save_model
+./log
