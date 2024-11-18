@@ -51,13 +51,13 @@ class AutoEncoder(nn.Module):
         super(AutoEncoder, self).__init__()
         # Encoder part
         self.encoder = nn.Sequential(
-            conv_block(1, 16, 10, 8, 1, encoder_dropout),
+            conv_block(2, 16, 10, 4, 1, encoder_dropout),
             conv_block(16, 32, 8, 4, 1, encoder_dropout),
-            conv_block(32, 64, 6, 3, 1, encoder_dropout),
+            conv_block(32, 64, 6, 2, 1, encoder_dropout),
             conv_block(64, 128, 4, 2, 1, encoder_dropout),
             conv_block(128, 256, 4, 2, 1, encoder_dropout),
             nn.Flatten(start_dim=1),
-            linear_block(256 * 4 * 4, 64, encoder_dropout),
+            linear_block(256 * 3 * 3, 64, encoder_dropout),
             nn.Linear(64, 8),
             nn.BatchNorm1d(8)
         )
@@ -65,13 +65,13 @@ class AutoEncoder(nn.Module):
         # Decoder part
         self.decoder = nn.Sequential(
             linear_block(8, 64, dropout=decoder_dropout),
-            linear_block(64, 256 * 4 * 4, dropout=decoder_dropout),
-            nn.Unflatten(dim=1, unflattened_size=(256, 4, 4)),
-            deconv_block(256, 128, 4, 2, 1, 0, dropout=decoder_dropout),
-            deconv_block(128, 64, 5, 2, 1, 1, dropout=decoder_dropout),
-            deconv_block(64, 32, 6, 3, 1, 0, dropout=decoder_dropout),
-            deconv_block(32, 16, 9, 4, 1, 1, dropout=decoder_dropout),
-            nn.ConvTranspose2d(16, 1, 10, 8, 1, 0),
+            linear_block(64, 256 * 3 * 3, dropout=decoder_dropout),
+            nn.Unflatten(dim=1, unflattened_size=(256, 3, 3)),
+            deconv_block(256, 128, 4, 2, 1, 1, dropout=decoder_dropout),
+            deconv_block(128, 64, 4, 2, 1, 0, dropout=decoder_dropout),
+            deconv_block(64, 32, 6, 2, 1, 1, dropout=decoder_dropout),
+            deconv_block(32, 16, 8, 4, 1, 1, dropout=decoder_dropout),
+            nn.ConvTranspose2d(16, 2, 11, 4, 2, 1),
             nn.Sigmoid()  # Assuming the output needs to be normalized between 0 and 1
         )
 
@@ -97,7 +97,7 @@ class AutoEncoder(nn.Module):
 # Example usage
 if __name__ == "__main__":
     model = AutoEncoder()
-    input_image = torch.randn(64, 1, 1792, 1792)
+    input_image = torch.randn(64, 2, 512, 512)
 
     feature = model.encoder_layer(input_image)
     output_image = model.decoder_layer(feature)
