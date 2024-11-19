@@ -47,7 +47,7 @@ class linear_block(nn.Module):
         return x
     
 class AutoEncoder(nn.Module):
-    def __init__(self, encoder_dropout=0.0, decoder_dropout=0.0):
+    def __init__(self, encoder_dropout=0.05, decoder_dropout=0.05):
         super(AutoEncoder, self).__init__()
         # Encoder part
         self.encoder = nn.Sequential(
@@ -57,7 +57,7 @@ class AutoEncoder(nn.Module):
             conv_block(64, 128, 4, 2, 1, encoder_dropout),
             conv_block(128, 256, 4, 2, 1, encoder_dropout),
             nn.Flatten(start_dim=1),
-            linear_block(256 * 3 * 3, 64, encoder_dropout),
+            linear_block(256 * 4 * 2, 64, encoder_dropout),
             nn.Linear(64, 8),
             nn.BatchNorm1d(8)
         )
@@ -65,11 +65,11 @@ class AutoEncoder(nn.Module):
         # Decoder part
         self.decoder = nn.Sequential(
             linear_block(8, 64, dropout=decoder_dropout),
-            linear_block(64, 256 * 3 * 3, dropout=decoder_dropout),
-            nn.Unflatten(dim=1, unflattened_size=(256, 3, 3)),
-            deconv_block(256, 128, 4, 2, 1, 1, dropout=decoder_dropout),
-            deconv_block(128, 64, 4, 2, 1, 0, dropout=decoder_dropout),
-            deconv_block(64, 32, 6, 2, 1, 1, dropout=decoder_dropout),
+            linear_block(64, 256 * 4 * 2, dropout=decoder_dropout),
+            nn.Unflatten(dim=1, unflattened_size=(256, 4, 2)),
+            deconv_block(256, 128, 4, 2, 1, (1,0), dropout=decoder_dropout),
+            deconv_block(128, 64, 4, 2, 1, (0,0), dropout=decoder_dropout),
+            deconv_block(64, 32, 6, 2, 1, (1,1), dropout=decoder_dropout),
             deconv_block(32, 16, 8, 4, 1, 1, dropout=decoder_dropout),
             nn.ConvTranspose2d(16, 2, 11, 4, 2, 1),
             nn.Sigmoid()  # Assuming the output needs to be normalized between 0 and 1
@@ -97,7 +97,7 @@ class AutoEncoder(nn.Module):
 # Example usage
 if __name__ == "__main__":
     model = AutoEncoder()
-    input_image = torch.randn(64, 2, 512, 512)
+    input_image = torch.randn(64, 2, 640, 320)
 
     feature = model.encoder_layer(input_image)
     output_image = model.decoder_layer(feature)

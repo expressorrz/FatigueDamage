@@ -23,8 +23,9 @@ def load_source(source):
     y_list = []
     
     for i in source:
-        x =np.load(f'./dataset/A{i:003}/x.npy')
-        y =np.load(f'./dataset/A{i:003}/y.npy')
+        x =np.load(f'./dataset_aug/A{i:003}/x.npy')
+        y =np.load(f'./dataset_aug/A{i:003}/y.npy')
+        # print('x:', x.shape, 'y:', y.shape)
         x_list.append(x)
         y_list.append(y)
 

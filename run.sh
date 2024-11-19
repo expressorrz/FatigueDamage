@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sources=(3 9 11 12 13 14 19 20 25)
+sources=(3 9 11 12 13 14)
 
 for test_source in "${sources[@]}"; do
     if [ -d "log/source_$test_source" ] && [ -f "log/source_$test_source/training_log.npy" ]; then

@@ -23,7 +23,7 @@ def main():
     # set_global_seed(configs.seed)
 
     # load test data
-    all_source = [3, 9, 11, 12, 13, 14, 19, 20, 25]
+    all_source = [3, 9, 11, 12, 13, 14]
     test_loader = test_data_loader(configs.test_source)
     train_source = list(set(all_source) - set([configs.test_source]))
     print(f'Test source: {configs.test_source}, Train source: {train_source}')
